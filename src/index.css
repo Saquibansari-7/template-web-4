@@ -1,0 +1,161 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+@import "tailwindcss";
+
+/* Custom CSS Variables - A Royal Union Design System */
+:root {
+  --color-royal-red: #d42111;
+  --color-royal-gold: #c1a167;
+  --color-cream: #fcf9f2;
+  --color-ink: #1c1c18;
+  --color-surface-low: #f1eee7;
+  --color-surface-high: #ffffff;
+  --radius-royal: 12px;
+}
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+.font-serif {
+  font-family: 'Noto Serif', serif;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-royal-red);
+  border-radius: 4px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(211, 33, 17, 0.2);
+  color: var(--color-royal-red);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Royal Red Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-royal-red) 0%, #b31c0e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Royal Glassmorphism (Light) */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(193, 161, 103, 0.2);
+}
+
+/* Royal Ornate Border */
+.ornate-border {
+  position: relative;
+  border: 1px solid var(--color-royal-gold);
+  border-radius: var(--radius-royal);
+}
+
+.ornate-border::before,
+.ornate-border::after {
+  content: '◈';
+  position: absolute;
+  color: var(--color-royal-gold);
+  font-size: 1.2rem;
+}
+
+.ornate-border::before { top: -0.6rem; left: 50%; transform: translateX(-50%); }
+.ornate-border::after { bottom: -0.6rem; left: 50%; transform: translateX(-50%); }
+
+/* Button Styles - Royal Union */
+.btn-royal {
+  position: relative;
+  padding: 1rem 2.5rem;
+  background: var(--color-royal-red);
+  color: #ffffff;
+  font-family: 'Noto Serif', serif;
+  font-weight: 500;
+  border-radius: var(--radius-royal);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 33, 17, 0.2);
+}
+
+.btn-royal:hover {
+  background: #b31c0e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 33, 17, 0.3);
+}
+
+.btn-outline-royal {
+  padding: 1rem 2.5rem;
+  border: 2px solid var(--color-royal-red);
+  color: var(--color-royal-red);
+  font-family: 'Noto Serif', serif;
+  font-weight: 500;
+  border-radius: var(--radius-royal);
+  transition: all 0.3s ease;
+}
+
+.btn-outline-royal:hover {
+  background: var(--color-royal-red);
+  color: #ffffff;
+}
+
+/* Card Styles */
+.card-royal {
+  background: var(--color-surface-high);
+  border: 1px solid var(--color-surface-low);
+  border-radius: var(--radius-royal);
+  box-shadow: 0 10px 30px rgba(28, 28, 24, 0.03);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-royal:hover {
+  border-color: var(--color-royal-gold);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(28, 28, 24, 0.08);
+}
+
+/* Section Header Utility */
+.section-title {
+  @apply font-serif text-4xl md:text-5xl text-center mb-4;
+  color: var(--color-royal-red);
+}
+
+.section-subtitle {
+  @apply font-sans text-sm tracking-[0.2em] uppercase text-center mb-12;
+  color: var(--color-royal-gold);
+}
