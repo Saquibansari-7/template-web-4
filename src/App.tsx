@@ -8,6 +8,7 @@ import RSVPSection from './components/RSVPSection';
 import Footer from './components/Footer';
 import AdminEditModal from './components/AdminEditModal';
 import { ScrollProgress, Petals } from './components/Decor';
+import CurtainIntro from './components/CurtainIntro';
 
 export interface EventData {
   id: string;
@@ -231,6 +232,7 @@ function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--color-cream)]">
       <ScrollProgress />
+      <CurtainIntro />
       {/* Global petal flow across the whole site */}
       <div className="fixed inset-0 z-30 pointer-events-none opacity-80">
         <Petals count={18} />
