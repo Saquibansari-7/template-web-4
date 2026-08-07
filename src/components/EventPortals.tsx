@@ -16,7 +16,7 @@ const events: Event[] = [
   {
     id: 'mehendi',
     name: 'Mehendi',
-    date: 'December 18, 2024',
+    date: 'December 18, 2026',
     time: '4:00 PM Onwards',
     venue: 'The Grand Haveli, Jaipur',
     description: 'An evening of traditional henna artistry and folk music',
@@ -25,7 +25,7 @@ const events: Event[] = [
   {
     id: 'haldi',
     name: 'Haldi',
-    date: 'December 19, 2024',
+    date: 'December 19, 2026',
     time: '10:00 AM',
     venue: 'Royal Gardens, Jaipur',
     description: 'Sacred turmeric ceremony with loved ones',
@@ -34,7 +34,7 @@ const events: Event[] = [
   {
     id: 'shaadi',
     name: 'Shaadi',
-    date: 'December 20, 2024',
+    date: 'December 20, 2026',
     time: '6:00 PM',
     venue: 'Taj Palace, Jaipur',
     description: 'The celestial union of two souls',
@@ -43,7 +43,7 @@ const events: Event[] = [
   {
     id: 'reception',
     name: 'Reception',
-    date: 'December 21, 2024',
+    date: 'December 21, 2026',
     time: '7:30 PM',
     venue: 'The Grand Ballroom, Jaipur',
     description: 'A night of celebration, dance, and feast',

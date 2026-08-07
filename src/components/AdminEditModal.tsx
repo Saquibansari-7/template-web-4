@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Trash2, Calendar, Layout, Info, Upload, Image } from 'lucide-react';
+import { X, Save, Trash2, Calendar, Info, Upload, Image, Eye, EyeOff, Images } from 'lucide-react';
 import { WeddingData } from '../App';
 
 interface AdminEditModalProps {
@@ -17,13 +17,59 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
     invitationImage: data.invitationImage || '',
     thingsToKnow: data.thingsToKnow || []
   });
-  const [activeTab, setActiveTab] = useState<'general' | 'events' | 'info'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'events' | 'gallery' | 'info'>('general');
   const [emblemPreview, setEmblemPreview] = useState<string>(data.emblem || '');
   const [invitationPreview, setInvitationPreview] = useState<string>(data.invitationImage || '');
   const [isHoveringEmblem, setIsHoveringEmblem] = useState(false);
   const [isHoveringInvitation, setIsHoveringInvitation] = useState(false);
   const emblemInputRef = useRef<HTMLInputElement>(null);
   const invitationInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddGalleryImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newImages = [...formData.gallery];
+      Array.from(files).forEach((file) => {
+        if (!file.type.startsWith('image/')) {
+          alert(`"${file.name}" is not an image and was skipped`);
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`"${file.name}" is larger than 5MB and was skipped`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result as string;
+          setFormData((prev) => ({
+            ...prev,
+            gallery: [
+              ...prev.gallery,
+              {
+                id: `g${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                src: base64,
+                alt: file.name.replace(/\.[^.]+$/, ''),
+              },
+            ],
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveGalleryImage = (id: string) => {
+    setFormData((prev) => ({ ...prev, gallery: prev.gallery.filter((g) => g.id !== id) }));
+  };
+
+  const handleGalleryAltChange = (id: string, alt: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      gallery: prev.gallery.map((g) => (g.id === id ? { ...g, alt } : g)),
+    }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -100,6 +146,12 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
     setFormData((prev) => ({ ...prev, events: updatedEvents }));
   };
 
+  const handleEventVisibility = (index: number, visible: boolean) => {
+    const updatedEvents = [...formData.events];
+    updatedEvents[index] = { ...updatedEvents[index], visible };
+    setFormData((prev) => ({ ...prev, events: updatedEvents }));
+  };
+
   const handleInfoChange = (index: number, field: 'title' | 'description' | 'icon', value: string) => {
     const updatedInfo = [...formData.thingsToKnow];
     updatedInfo[index] = { ...updatedInfo[index], [field]: value };
@@ -168,6 +220,14 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
               Event Schedule
             </button>
             <button
+              onClick={() => setActiveTab('gallery')}
+              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'gallery' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
+                }`}
+            >
+              <Images className="w-4 h-4" />
+              Gallery
+            </button>
+            <button
               onClick={() => setActiveTab('info')}
               className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'info' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
                 }`}
@@ -209,30 +269,6 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                       <input type="tel" name="adminPhone" value={formData.adminPhone || ''} onChange={handleChange} className="admin-input" placeholder="919876543210" />
                     </div>
 
-                  </div>
-
-                  {/* Section Toggles */}
-                  <div className="bg-gray-50 p-6 rounded-2xl border border-[var(--color-surface-low)]">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-ink)] mb-4 flex items-center gap-2">
-                      <Layout className="w-4 h-4 text-[var(--color-royal-gold)]" />
-                      Section Visibility
-                    </h3>
-                    <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
-                      <div>
-                        <p className="font-medium text-[var(--color-ink)]">Captured Moments (Gallery)</p>
-                        <p className="text-xs text-gray-400">Show or hide the wedding photo gallery</p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="showGallery"
-                          checked={formData.showGallery}
-                          onChange={(e) => setFormData(prev => ({ ...prev, showGallery: e.target.checked }))}
-                          className="sr-only peer"
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-royal-red)]"></div>
-                      </label>
-                    </div>
                   </div>
 
                   {/* Royal Emblem Upload */}
@@ -379,12 +415,36 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                 <div className="space-y-12">
                   {formData.events.map((event, index) => (
                     <div key={event.id} className="p-6 bg-gray-50 rounded-2xl border border-[var(--color-surface-low)] space-y-6">
-                      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-                        <h3 className="font-serif text-xl text-[var(--color-royal-red)] flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-base"></span>
-                          {event.name} Event
+                      <div className="flex items-center justify-between border-b border-gray-200 pb-4 gap-3">
+                        <h3 className="font-serif text-xl text-[var(--color-royal-red)] flex items-center gap-3 min-w-0">
+                          <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-base shrink-0"></span>
+                          <span className="truncate">{event.name} Event</span>
                         </h3>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-300">ID: {event.id}</span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-300 hidden sm:block">ID: {event.id}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleEventVisibility(index, !(event.visible !== false))}
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border transition-all ${
+                              event.visible !== false
+                                ? 'bg-[var(--color-royal-red)]/10 text-[var(--color-royal-red)] border-[var(--color-royal-red)]/30'
+                                : 'bg-gray-100 text-gray-400 border-gray-200'
+                            }`}
+                            title={event.visible !== false ? 'Visible on website' : 'Hidden from website'}
+                          >
+                            {event.visible !== false ? (
+                              <>
+                                <Eye className="w-3.5 h-3.5" />
+                                Visible
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="w-3.5 h-3.5" />
+                                Hidden
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -416,6 +476,82 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                     </div>
                   ))}
                 </div>
+              ) : activeTab === 'gallery' ? (
+                <div className="space-y-8">
+                  {/* Section Visibility */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-[var(--color-surface-low)]">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+                      <div>
+                        <p className="font-medium text-[var(--color-ink)]">Show Gallery on Website</p>
+                        <p className="text-xs text-gray-400">Display the Captured Moments section publicly</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.showGallery}
+                          onChange={(e) => setFormData(prev => ({ ...prev, showGallery: e.target.checked }))}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--color-royal-red)]"></div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Add Images */}
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-[var(--color-surface-low)]">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-ink)] mb-4 flex items-center gap-2">
+                      <Images className="w-4 h-4 text-[var(--color-royal-gold)]" />
+                      Gallery Images
+                    </h3>
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleAddGalleryImage}
+                      className="hidden"
+                      id="gallery-upload"
+                    />
+                    <label
+                      htmlFor="gallery-upload"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-royal-gold)] text-white rounded-xl cursor-pointer hover:bg-[var(--color-royal-gold)]/90 transition-all font-bold text-sm tracking-wider uppercase shadow-lg hover:shadow-xl"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Add Images
+                    </label>
+                    <p className="text-xs text-gray-400 mt-3">You can select multiple images at once. Max 5MB each.</p>
+                  </div>
+
+                  {/* Image List */}
+                  {formData.gallery.length === 0 ? (
+                    <p className="text-center text-gray-400 text-sm py-6">No images added yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {formData.gallery.map((img) => (
+                        <div key={img.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-2xl border border-[var(--color-surface-low)]">
+                          <img src={img.src} alt={img.alt} className="w-20 h-20 object-cover rounded-xl border border-gray-200 shrink-0" />
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <input
+                              type="text"
+                              value={img.alt}
+                              onChange={(e) => handleGalleryAltChange(img.id, e.target.value)}
+                              placeholder="Image description"
+                              className="admin-input py-2 text-sm"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveGalleryImage(img.id)}
+                            className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                            title="Remove image"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : activeTab === 'info' ? (
                 <div className="space-y-12">
                   {formData.thingsToKnow.map((item, index) => (
@@ -431,10 +567,6 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                         <div className="space-y-1">
                           <label className="text-[10px] font-bold uppercase text-gray-400">Title</label>
                           <input type="text" value={item.title} onChange={(e) => handleInfoChange(index, 'title', e.target.value)} className="admin-input py-2 text-sm" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold uppercase text-gray-400">Icon (Emoji)</label>
-                          <input type="text" value={item.icon || ''} onChange={(e) => handleInfoChange(index, 'icon', e.target.value)} className="admin-input py-2 text-sm" placeholder="e.g., ☀️" />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[10px] font-bold uppercase text-gray-400">Description</label>

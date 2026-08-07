@@ -1,17 +1,35 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+/* Import Google Fonts - Playful Editorial pairing */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
-/* Custom CSS Variables - A Royal Union Design System */
+/* Custom CSS Variables - Playful Editorial Royal Design System */
 :root {
+  /* Brand colors (kept from original, approved) */
   --color-royal-red: #d42111;
   --color-royal-gold: #c1a167;
   --color-cream: #fcf9f2;
   --color-ink: #1c1c18;
   --color-surface-low: #f1eee7;
   --color-surface-high: #ffffff;
-  --radius-royal: 12px;
+
+  /* Playful editorial pastel accents */
+  --color-blush: #fbe9e7;
+  --color-peach: #fcebd9;
+  --color-sage: #e9f0e6;
+  --color-lilac: #f0e9f5;
+  --color-sky: #e8eef7;
+  --color-rose: #f7d9d4;
+
+  /* Twilight (for the celestial interlude) */
+  --color-twilight-top: #2a2140;
+  --color-twilight-mid: #4a2f54;
+  --color-twilight-low: #7a4a63;
+
+  --radius-royal: 28px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 18px 50px -20px rgba(28, 28, 24, 0.25);
+  --shadow-gold: 0 20px 60px -25px rgba(193, 161, 103, 0.6);
 }
 
 /* Base Styles */
@@ -20,25 +38,26 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Quicksand', sans-serif;
   background-color: var(--color-cream);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* Typography */
 .font-serif {
-  font-family: 'Noto Serif', serif;
+  font-family: 'Fraunces', serif;
 }
 
 .font-sans {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Quicksand', sans-serif;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
 
 ::-webkit-scrollbar-track {
@@ -46,13 +65,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-royal-red);
-  border-radius: 4px;
+  background: linear-gradient(var(--color-royal-red), var(--color-royal-gold));
+  border-radius: var(--radius-pill);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(211, 33, 17, 0.2);
+  background: rgba(212, 33, 17, 0.18);
   color: var(--color-royal-red);
 }
 
@@ -66,12 +85,75 @@ body {
   animation: fadeIn 0.8s ease-out forwards;
 }
 
-/* Royal Red Gradient Text */
+/* Falling petals */
+@keyframes petalFall {
+  0% { transform: translateY(-12%) translateX(0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.95; }
+  90% { opacity: 0.95; }
+  100% { transform: translateY(115vh) translateX(var(--drift, 40px)) rotate(420deg); opacity: 0; }
+}
+
+.petal {
+  position: absolute;
+  top: -40px;
+  animation-name: petalFall;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+
+/* Twinkling stars */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.star {
+  animation: twinkle ease-in-out infinite;
+}
+
+/* Gentle float */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(4deg); }
+}
+
+.floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+/* Slow spin for ornaments */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-slow {
+  animation: spinSlow 40s linear infinite;
+}
+
+/* Shimmering gold text */
+@keyframes goldShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-royal-red) 0%, #b31c0e 100%);
+  background: linear-gradient(100deg, var(--color-royal-red) 0%, #b31c0e 30%, var(--color-royal-gold) 55%, #b31c0e 80%, var(--color-royal-red) 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: goldShimmer 6s linear infinite;
+}
+
+.gradient-gold {
+  background: linear-gradient(100deg, var(--color-royal-gold), #e7d2a3, var(--color-royal-gold));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 6s linear infinite;
 }
 
 /* Royal Glassmorphism (Light) */
@@ -82,80 +164,154 @@ body {
   border: 1px solid rgba(193, 161, 103, 0.2);
 }
 
-/* Royal Ornate Border */
+/* Playful ornate border */
 .ornate-border {
   position: relative;
-  border: 1px solid var(--color-royal-gold);
+  border: 2px solid rgba(193, 161, 103, 0.4);
   border-radius: var(--radius-royal);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,0.7), rgba(251,233,231,0.35));
 }
 
 .ornate-border::before,
 .ornate-border::after {
-  content: '◈';
+  content: '❧';
   position: absolute;
   color: var(--color-royal-gold);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  line-height: 1;
 }
 
-.ornate-border::before { top: -0.6rem; left: 50%; transform: translateX(-50%); }
-.ornate-border::after { bottom: -0.6rem; left: 50%; transform: translateX(-50%); }
+.ornate-border::before { top: -0.85rem; left: 50%; transform: translateX(-50%); }
+.ornate-border::after { bottom: -0.85rem; left: 50%; transform: translateX(-50%); }
 
-/* Button Styles - Royal Union */
+/* Button Styles - Playful Royal */
 .btn-royal {
   position: relative;
   padding: 1rem 2.5rem;
-  background: var(--color-royal-red);
+  background: linear-gradient(135deg, var(--color-royal-red), #b31c0e);
   color: #ffffff;
-  font-family: 'Noto Serif', serif;
-  font-weight: 500;
-  border-radius: var(--radius-royal);
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(212, 33, 17, 0.2);
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  box-shadow: 0 12px 30px -10px rgba(212, 33, 17, 0.5);
 }
 
 .btn-royal:hover {
-  background: #b31c0e;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 33, 17, 0.3);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 18px 40px -12px rgba(212, 33, 17, 0.6);
 }
 
 .btn-outline-royal {
-  padding: 1rem 2.5rem;
+  padding: 0.85rem 2rem;
   border: 2px solid var(--color-royal-red);
   color: var(--color-royal-red);
-  font-family: 'Noto Serif', serif;
-  font-weight: 500;
-  border-radius: var(--radius-royal);
-  transition: all 0.3s ease;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-outline-royal:hover {
   background: var(--color-royal-red);
   color: #ffffff;
+  transform: translateY(-2px) scale(1.02);
 }
 
-/* Card Styles */
+/* Card Styles - Playful */
 .card-royal {
   background: var(--color-surface-high);
   border: 1px solid var(--color-surface-low);
   border-radius: var(--radius-royal);
-  box-shadow: 0 10px 30px rgba(28, 28, 24, 0.03);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease, border-color 0.45s ease;
 }
 
 .card-royal:hover {
   border-color: var(--color-royal-gold);
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(28, 28, 24, 0.08);
+  transform: translateY(-8px) rotate(-0.4deg);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Pastel surface helper */
+.surface-pastel {
+  background: linear-gradient(160deg, var(--color-blush), var(--color-peach));
 }
 
 /* Section Header Utility */
 .section-title {
-  @apply font-serif text-4xl md:text-5xl text-center mb-4;
+  @apply font-serif text-4xl md:text-6xl text-center mb-3;
   color: var(--color-royal-red);
+  letter-spacing: -0.01em;
 }
 
 .section-subtitle {
-  @apply font-sans text-sm tracking-[0.2em] uppercase text-center mb-12;
+  @apply font-sans text-xs md:text-sm tracking-[0.35em] uppercase text-center mb-10;
   color: var(--color-royal-gold);
+  font-weight: 600;
+}
+
+/* Admin panel input fields - clearly visible editable boxes */
+.admin-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  border: 1.5px solid var(--color-surface-low);
+  border-radius: 0.875rem;
+  color: var(--color-ink);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  box-shadow: 0 1px 2px rgba(28, 28, 24, 0.04);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.admin-input::placeholder {
+  color: rgba(28, 28, 24, 0.35);
+}
+
+.admin-input:hover {
+  border-color: var(--color-royal-gold);
+}
+
+.admin-input:focus {
+  border-color: var(--color-royal-red);
+  box-shadow: 0 0 0 4px rgba(212, 33, 17, 0.12);
+  background-color: #fffdfb;
+}
+
+.admin-input:disabled {
+  background-color: #f6f4ef;
+  color: rgba(28, 28, 24, 0.4);
+  cursor: not-allowed;
+}
+
+/* Custom scrollbar for the admin modal body */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-royal-red), var(--color-royal-gold));
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-royal-gold) transparent;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .petal, .star, .floaty, .spin-slow, .gradient-text, .gradient-gold {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
 }

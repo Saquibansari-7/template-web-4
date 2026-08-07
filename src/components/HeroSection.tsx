@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, X } from 'lucide-react';
 import { WeddingData } from '../App';
 import royalEmblem from '../assets/royal-emblem.png';
+import { Blob } from './Decor';
 
 export default function HeroSection({ weddingData }: { weddingData: WeddingData }) {
   const [showInvitation, setShowInvitation] = useState(false);
@@ -12,41 +13,48 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
   const formattedDate = dateObj.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   }).replace(/\//g, '.');
 
   // Determine emblem source - use uploaded emblem if available, otherwise default
   const emblemSrc = weddingData.emblem && weddingData.emblem.trim() !== ''
-    ? weddingData.emblem
+       ? weddingData.emblem
     : royalEmblem;
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--color-cream)]">
+    <section
+      id="home"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[var(--color-cream)]"
+    >
       {/* Texture Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/paper-fibers.png')" }}
       />
 
+      {/* Soft pastel blobs */}
+      <Blob color="var(--color-blush)" className="w-[42rem] h-[42rem] -top-40 -left-32 floaty" />
+      <Blob color="var(--color-sky)" className="w-[36rem] h-[36rem] -bottom-40 -right-32 floaty" style={{ animationDelay: '2s' }} />
+      <Blob color="var(--color-peach)" className="w-[28rem] h-[28rem] top-1/3 right-10 opacity-40 floaty" style={{ animationDelay: '4s' }} />
+
       {/* Decorative Corner Ornaments */}
-      <div className="absolute top-10 left-10 w-32 h-32 border-t-2 border-l-2 border-[var(--color-royal-gold)] opacity-30 rounded-tl-[var(--radius-royal)]" />
-      <div className="absolute top-10 right-10 w-32 h-32 border-t-2 border-r-2 border-[var(--color-royal-gold)] opacity-30 rounded-tr-[var(--radius-royal)]" />
-      <div className="absolute bottom-10 left-10 w-32 h-32 border-b-2 border-l-2 border-[var(--color-royal-gold)] opacity-30 rounded-bl-[var(--radius-royal)]" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 border-b-2 border-r-2 border-[var(--color-royal-gold)] opacity-30 rounded-br-[var(--radius-royal)]" />
+      <div className="absolute top-10 left-10 w-32 h-32 border-t-2 border-l-2 border-[var(--color-royal-gold)] opacity-40 rounded-tl-[var(--radius-royal)]" />
+      <div className="absolute top-10 right-10 w-32 h-32 border-t-2 border-r-2 border-[var(--color-royal-gold)] opacity-40 rounded-tr-[var(--radius-royal)]" />
+      <div className="absolute bottom-10 left-10 w-32 h-32 border-b-2 border-l-2 border-[var(--color-royal-gold)] opacity-40 rounded-bl-[var(--radius-royal)]" />
+      <div className="absolute bottom-10 right-10 w-32 h-32 border-b-2 border-r-2 border-[var(--color-royal-gold)] opacity-40 rounded-br-[var(--radius-royal)]" />
 
       {/* Main Content Container */}
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto ornate-border p-12 md:p-24 bg-white/40 backdrop-blur-sm shadow-2xl shadow-[var(--color-royal-red)]/5">
-
+      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto ornate-border p-12 md:p-24 shadow-2xl shadow-[var(--color-royal-red)]/5">
         {/* Royal Emblem */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="mb-10"
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          className="mb-10 floaty"
         >
           <img
             src={emblemSrc}
             alt="Royal Wedding Emblem"
-            className="mx-auto w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl"
+            className="mx-auto w-44 h-44 md:w-60 md:h-60 object-contain drop-shadow-2xl"
             style={{ mixBlendMode: 'multiply' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -56,7 +64,7 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
                 target.classList.add('fallback-shown');
                 target.style.display = 'none';
                 const fallback = document.createElement('div');
-                fallback.className = 'flex items-center justify-center w-48 h-48 md:w-64 md:h-64 text-gray-300';
+                fallback.className = 'flex items-center justify-center w-44 h-44 md:w-60 md:h-60 text-gray-300';
                 fallback.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="12" cy="12" r="3"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>';
                 parent.appendChild(fallback);
               }
@@ -69,7 +77,7 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-[var(--color-royal-gold)] tracking-[0.5em] text-xs md:text-sm mb-8 font-sans font-medium"
+          className="text-[var(--color-royal-gold)] tracking-[0.5em] text-xs md:text-sm mb-8 font-sans font-semibold"
         >
           THE ROYAL UNION OF
         </motion.p>
@@ -85,9 +93,9 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
               {weddingData.brideName}
             </h1>
             <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 1, type: "spring", stiffness: 100 }}
+              initial={{ scale: 0, rotate: -30 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 1, type: 'spring', stiffness: 120, damping: 9 }}
               className="text-[var(--color-royal-gold)] font-serif text-4xl md:text-5xl italic"
             >
               &
@@ -101,7 +109,7 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
         {/* Decorative Divider */}
         <motion.div
           initial={{ width: 0, opacity: 0 }}
-          animate={{ width: "60%", opacity: 1 }}
+          animate={{ width: '60%', opacity: 1 }}
           transition={{ delay: 1.2, duration: 1 }}
           className="h-px bg-gradient-to-r from-transparent via-[var(--color-royal-gold)] to-transparent mx-auto my-10"
         />
@@ -122,9 +130,9 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
 
         {/* Call to Action */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.8, type: 'spring', stiffness: 120, damping: 10 }}
           className="mt-12"
         >
           <button onClick={() => setShowInvitation(true)} className="btn-royal">
@@ -136,10 +144,10 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
       {/* Scroll Indicator */}
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
-        animate={{ y: [0, 10, 0] }}
+        animate={{ y: [0, 12, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <ChevronDown className="text-[var(--color-royal-red)] w-8 h-8 opacity-50" />
+        <ChevronDown className="text-[var(--color-royal-red)] w-8 h-8 opacity-60" />
       </motion.div>
 
       {/* Invitation Modal */}
@@ -157,7 +165,7 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden"
+              className="relative max-w-4xl max-h-[90vh] bg-white rounded-[var(--radius-royal)] shadow-2xl overflow-hidden"
             >
               <button
                 onClick={() => setShowInvitation(false)}
