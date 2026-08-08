@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/parser": "^7.29.2",
     "@react-three/fiber": "^9.6.0",
+    "@supabase/supabase-js": "^2.112.2",
     "@tailwindcss/vite": "^4.2.1",
     "framer-motion": "^12.35.0",
     "gsap": "^3.12.5",

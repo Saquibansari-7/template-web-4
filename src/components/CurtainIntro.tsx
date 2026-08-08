@@ -36,7 +36,14 @@ function buildStrips(container: HTMLDivElement): HTMLDivElement[] {
 }
 
 export default function CurtainIntro() {
+  const [skip, setSkip] = useState(() => window.location.pathname === '/admin');
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (skip) setDone(true);
+  }, [skip]);
+
+  if (skip) return null;
   const stageRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
@@ -55,6 +62,10 @@ export default function CurtainIntro() {
       openedRef.current = true;
       stage?.querySelector('.crt-hint')?.classList.add('crt-hidden');
       stage?.querySelector('.crt-seal')?.classList.add('crt-seal-gone');
+
+      // Signal the persistent music player to start
+      window.dispatchEvent(new Event('curtain:play-music'));
+
 
       const vw = window.innerWidth;
       const STAGGER = 0.03;
@@ -128,7 +139,7 @@ export default function CurtainIntro() {
           <img src="/c-stamp.png" alt="Open" />
         </button>
       </div>
-      
+
       <style>{`
         .crt-stage {
           position: fixed;

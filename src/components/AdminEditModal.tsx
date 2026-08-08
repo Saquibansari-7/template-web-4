@@ -1,15 +1,21 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Trash2, Calendar, Info, Upload, Image, Eye, EyeOff, Images } from 'lucide-react';
-import { WeddingData } from '../App';
+import { X, Save, Trash2, Calendar, Info, Upload, Image, Eye, EyeOff, Images, Loader2, CheckCircle } from 'lucide-react';
+import { WeddingData, EventData } from '../context/WebsiteContext';
+import { uploadImage } from '../services/uploadImage';
+import { isSupabaseConfigured, DEFAULT_SITE_ID } from '../lib/supabase';
 
 interface AdminEditModalProps {
   data: WeddingData;
   onClose: () => void;
   onSave: (newData: WeddingData) => void;
+  onReset: () => void;
+  saving?: boolean;
+  saveError?: string | null;
+  saveSuccess?: boolean;
 }
 
-export default function AdminEditModal({ data, onClose, onSave }: AdminEditModalProps) {
+export default function AdminEditModal({ data, onClose, onSave, onReset, saving = false, saveError = null, saveSuccess = false }: AdminEditModalProps) {
   const [formData, setFormData] = useState<WeddingData>({
     ...data,
     events: data.events || [],
@@ -26,36 +32,44 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
   const invitationInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAddGalleryImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const readAsDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+
+  const resolveImageSrc = async (file: File): Promise<string> => {
+    if (isSupabaseConfigured()) {
+      try {
+        return await uploadImage(DEFAULT_SITE_ID, file);
+      } catch (err) {
+        console.warn('Image upload failed, falling back to base64', err);
+      }
+    }
+    return readAsDataUrl(file);
+  };
+
+  const handleAddGalleryImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const newImages = [...formData.gallery];
-      Array.from(files).forEach((file) => {
-        if (!file.type.startsWith('image/')) {
-          alert(`"${file.name}" is not an image and was skipped`);
-          return;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-          alert(`"${file.name}" is larger than 5MB and was skipped`);
-          return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result as string;
-          setFormData((prev) => ({
-            ...prev,
-            gallery: [
-              ...prev.gallery,
-              {
-                id: `g${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-                src: base64,
-                alt: file.name.replace(/\.[^.]+$/, ''),
-              },
-            ],
-          }));
-        };
-        reader.readAsDataURL(file);
-      });
+      const valid = Array.from(files).filter(
+        (f) => f.type.startsWith('image/') && f.size <= 5 * 1024 * 1024
+      );
+      for (const file of valid) {
+        const src = await resolveImageSrc(file);
+        setFormData((prev) => ({
+          ...prev,
+          gallery: [
+            ...prev.gallery,
+            {
+              id: `g${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+              src,
+              alt: file.name.replace(/\.[^.]+$/, ''),
+            },
+          ],
+        }));
+      }
       if (galleryInputRef.current) galleryInputRef.current.value = '';
     }
   };
@@ -77,27 +91,20 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
     setFormData((prev) => ({ ...prev, [name]: val }));
   };
 
-  const handleEmblemUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmblemUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        setEmblemPreview(base64);
-        setFormData(prev => ({ ...prev, emblem: base64 }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+    const src = await resolveImageSrc(file);
+    setEmblemPreview(src);
+    setFormData(prev => ({ ...prev, emblem: src }));
   };
 
   const handleRemoveEmblem = () => {
@@ -108,27 +115,20 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
     }
   };
 
-  const handleInvitationUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInvitationUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
-        setInvitationPreview(base64);
-        setFormData(prev => ({ ...prev, invitationImage: base64 }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+    const src = await resolveImageSrc(file);
+    setInvitationPreview(src);
+    setFormData(prev => ({ ...prev, invitationImage: src }));
   };
 
   const handleRemoveInvitation = () => {
@@ -152,22 +152,51 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
     setFormData((prev) => ({ ...prev, events: updatedEvents }));
   };
 
+  const handleAddEvent = () => {
+    const newEvent: EventData = {
+      id: `evt-${Date.now()}`,
+      name: 'New Event',
+      nameHindi: 'नया कार्यक्रम',
+      date: '',
+      time: '',
+      venue: '',
+      address: '',
+      mapLink: '',
+      description: '',
+      visible: true,
+    };
+    setFormData((prev) => ({ ...prev, events: [...prev.events, newEvent] }));
+  };
+
+  const handleRemoveEvent = (index: number) => {
+    setFormData((prev) => ({ ...prev, events: prev.events.filter((_, i) => i !== index) }));
+  };
+
   const handleInfoChange = (index: number, field: 'title' | 'description' | 'icon', value: string) => {
     const updatedInfo = [...formData.thingsToKnow];
     updatedInfo[index] = { ...updatedInfo[index], [field]: value };
     setFormData((prev) => ({ ...prev, thingsToKnow: updatedInfo }));
   };
 
+  const handleAddInfo = () => {
+    setFormData((prev) => ({
+      ...prev,
+      thingsToKnow: [...prev.thingsToKnow, { title: 'New Info', description: '', icon: '' }],
+    }));
+  };
+
+  const handleRemoveInfo = (index: number) => {
+    setFormData((prev) => ({ ...prev, thingsToKnow: prev.thingsToKnow.filter((_, i) => i !== index) }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
-    onClose();
   };
 
   const handleReset = () => {
     if (confirm('Are you sure you want to reset to default values?')) {
-      localStorage.removeItem('weddingData');
-      window.location.reload();
+      onReset();
     }
   };
 
@@ -267,6 +296,19 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]/50">Admin Phone (WhatsApp)</label>
                       <input type="tel" name="adminPhone" value={formData.adminPhone || ''} onChange={handleChange} className="admin-input" placeholder="919876543210" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]/50">Venue Name</label>
+                      <input type="text" name="venueName" value={formData.venueName || ''} onChange={handleChange} className="admin-input" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]/50">Venue City</label>
+                      <input type="text" name="venueCity" value={formData.venueCity || ''} onChange={handleChange} className="admin-input" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]/50">Venue State</label>
+                      <input type="text" name="venueState" value={formData.venueState || ''} onChange={handleChange} className="admin-input" />
                     </div>
 
                   </div>
@@ -413,6 +455,19 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                 </div>
               ) : activeTab === 'events' ? (
                 <div className="space-y-12">
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleAddEvent}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-royal-gold)] text-white rounded-xl hover:bg-[var(--color-royal-gold)]/90 transition-all font-bold text-sm tracking-wider uppercase shadow"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Add Event
+                    </button>
+                  </div>
+                  {formData.events.length === 0 && (
+                    <p className="text-center text-gray-400 text-sm py-6">No events added yet.</p>
+                  )}
                   {formData.events.map((event, index) => (
                     <div key={event.id} className="p-6 bg-gray-50 rounded-2xl border border-[var(--color-surface-low)] space-y-6">
                       <div className="flex items-center justify-between border-b border-gray-200 pb-4 gap-3">
@@ -444,6 +499,14 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                               </>
                             )}
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveEvent(index)}
+                            className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                            title="Delete event"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 
@@ -467,6 +530,14 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                         <div className="space-y-1 md:col-span-2">
                           <label className="text-[10px] font-bold uppercase text-gray-400">Venue</label>
                           <input type="text" value={event.venue} onChange={(e) => handleEventChange(index, e)} name="venue" className="admin-input py-2 text-sm" />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                          <label className="text-[10px] font-bold uppercase text-gray-400">Address</label>
+                          <input type="text" value={event.address} onChange={(e) => handleEventChange(index, e)} name="address" className="admin-input py-2 text-sm" />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                          <label className="text-[10px] font-bold uppercase text-gray-400">Map Link</label>
+                          <input type="text" value={event.mapLink} onChange={(e) => handleEventChange(index, e)} name="mapLink" className="admin-input py-2 text-sm" />
                         </div>
                         <div className="space-y-1 md:col-span-2">
                           <label className="text-[10px] font-bold uppercase text-gray-400">Description</label>
@@ -554,13 +625,34 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                 </div>
               ) : activeTab === 'info' ? (
                 <div className="space-y-12">
-                  {formData.thingsToKnow.map((item, index) => (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleAddInfo}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-royal-gold)] text-white rounded-xl hover:bg-[var(--color-royal-gold)]/90 transition-all font-bold text-sm tracking-wider uppercase shadow"
+                    >
+                      <Info className="w-4 h-4" />
+                      Add Info
+                    </button>
+                  </div>
+                  {formData.thingsToKnow.length === 0 ? (
+                    <p className="text-center text-gray-400 text-sm py-6">No guest info added yet.</p>
+                  ) : (
+                    formData.thingsToKnow.map((item, index) => (
                     <div key={index} className="p-6 bg-gray-50 rounded-2xl border border-[var(--color-surface-low)] space-y-6">
                       <div className="flex items-center justify-between border-b border-gray-200 pb-4">
                         <h3 className="font-serif text-xl text-[var(--color-royal-red)] flex items-center gap-3">
                           <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-base">#{index + 1}</span>
                           {item.title} Info
                         </h3>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveInfo(index)}
+                          className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                          title="Delete info"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
 
                       <div className="grid grid-cols-1 gap-4">
@@ -574,7 +666,8 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
                         </div>
                       </div>
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               ) : null}
             </form>
@@ -582,12 +675,26 @@ export default function AdminEditModal({ data, onClose, onSave }: AdminEditModal
 
           {/* Footer Actions */}
           <div className="p-6 bg-white border-t border-[var(--color-surface-low)] flex flex-col sm:flex-row items-center gap-4 flex-shrink-0">
+            {saveError && (
+              <p className="w-full text-center text-sm text-red-500">{saveError}</p>
+            )}
+            {saveSuccess && !saveError && (
+              <p className="w-full text-center text-sm text-green-600 flex items-center justify-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Saved successfully.
+              </p>
+            )}
             <button
               onClick={handleSubmit}
-              className="w-full sm:flex-1 btn-royal py-3 flex items-center justify-center gap-2"
+              disabled={saving}
+              className="w-full sm:flex-1 btn-royal py-3 flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              <Save className="w-5 h-5" />
-              Save Changes
+              {saving ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Save className="w-5 h-5" />
+              )}
+              {saving ? 'Saving…' : 'Save Changes'}
             </button>
             <button
               type="button"
