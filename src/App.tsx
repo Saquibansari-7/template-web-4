@@ -10,7 +10,9 @@ import AdminEditModal from './components/AdminEditModal';
 import { ScrollProgress, Petals } from './components/Decor';
 import CurtainIntro from './components/CurtainIntro';
 import MusicPlayer from './components/MusicPlayer';
+import LanguageToggle from './components/LanguageToggle';
 import { WebsiteProvider, useWebsiteContext, DEFAULT_WEDDING_DATA } from './context/WebsiteContext';
+import { LanguageProvider } from './context/LanguageContext';
 import type { WeddingData, EventData, InfoItem, GalleryImage } from './context/WebsiteContext';
 
 export type { WeddingData, EventData, InfoItem, GalleryImage };
@@ -53,6 +55,7 @@ function SiteApp() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--color-cream)]">
+      <LanguageToggle />
       <ScrollProgress />
       <CurtainIntro />
       <MusicPlayer />
@@ -133,9 +136,11 @@ function SiteApp() {
 
 export default function App() {
   return (
-    <WebsiteProvider>
-      <SiteApp />
-    </WebsiteProvider>
+    <LanguageProvider>
+      <WebsiteProvider>
+        <SiteApp />
+      </WebsiteProvider>
+    </LanguageProvider>
   );
 }
 

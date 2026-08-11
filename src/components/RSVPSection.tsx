@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { Reveal, SectionHeading, Blob } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 interface RSVPSectionProps {
   adminPhone: string;
 }
 
 export default function RSVPSection({ adminPhone }: RSVPSectionProps) {
+  const { t } = useT();
   const handleWhatsAppRSVP = () => {
     const cleanPhone = adminPhone.replace(/[^0-9]/g, ''); // Remove non-numeric characters
     const message = `Wedding RSVP%0A%0AHi, I'd like to RSVP for the wedding of beautiful couple. Please confirm my attendance.`;
@@ -18,11 +20,11 @@ export default function RSVPSection({ adminPhone }: RSVPSectionProps) {
       <Blob color="var(--color-rose)" className="w-[30rem] h-[30rem] top-1/3 left-1/2 -translate-x-1/2 opacity-30 floaty" />
 
       <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-        <SectionHeading eyebrow="WE'D LOVE TO SEE YOU" title="Kindly Respond" />
+        <SectionHeading eyebrow={t("rsvp.eyebrow")} title={t("rsvp.title")} />
 
         <Reveal delay={0.1}>
           <p className="text-[var(--color-ink)]/60 text-lg mt-4 max-w-lg mx-auto mb-10">
-            Please RSVP through WhatsApp for a personal confirmation and any additional details.
+            {t("rsvp.text")}
           </p>
         </Reveal>
 
@@ -41,7 +43,7 @@ export default function RSVPSection({ adminPhone }: RSVPSectionProps) {
             >
               <MessageCircle size={26} />
             </motion.span>
-            RSVP via WhatsApp
+            {t("rsvp.button")}
           </motion.button>
         </Reveal>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { useT } from '../context/LanguageContext';
 
 const STRIPS_PER_PANEL = 22;
 
@@ -38,6 +39,7 @@ function buildStrips(container: HTMLDivElement): HTMLDivElement[] {
 export default function CurtainIntro() {
   const [skip, setSkip] = useState(() => window.location.pathname === '/admin');
   const [done, setDone] = useState(false);
+  const { t } = useT();
 
   useEffect(() => {
     if (skip) setDone(true);
@@ -135,9 +137,9 @@ export default function CurtainIntro() {
         <span className="crt-ring crt-ring-1" />
         <span className="crt-ring crt-ring-2" />
         <span className="crt-seal-glow" />
-        <button type="button" className="crt-stamp" onClick={() => stageRef.current?.click()} aria-label="Open">
-          <img src="/c-stamp.png" alt="Open" />
-        </button>
+         <button type="button" className="crt-stamp" onClick={() => stageRef.current?.click()} aria-label={t("open")}>
+           <img src="/c-stamp.png" alt={t("open")} />
+         </button>
       </div>
 
       <style>{`

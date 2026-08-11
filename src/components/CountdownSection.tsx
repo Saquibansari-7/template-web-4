@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Reveal, SectionHeading, Blob } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 interface CountdownSectionProps {
   weddingDate: string;
@@ -8,6 +9,7 @@ interface CountdownSectionProps {
 }
 
 export default function CountdownSection({ weddingDate, weddingTime }: CountdownSectionProps) {
+  const { t } = useT();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -50,7 +52,7 @@ export default function CountdownSection({ weddingDate, weddingTime }: Countdown
       <Blob color="var(--color-blush)" className="w-[28rem] h-[28rem] bottom-8 -left-24 opacity-40 floaty" style={{ animationDelay: '3s' }} />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6">
-        <SectionHeading eyebrow="COUNTING DOWN TO" title="Our Special Day" />
+        <SectionHeading eyebrow={t("countdown.eyebrow")} title={t("countdown.title")} />
 
         {/* Countdown Timer */}
         <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-12">

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, ExternalLink } from 'lucide-react';
 import { WeddingData, EventData } from '../App';
 import { Reveal, SectionHeading, Blob, WavyDivider } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 const pastels = [
   'var(--color-blush)',
@@ -12,6 +13,7 @@ const pastels = [
 ];
 
 export default function EventsSection({ weddingData }: { weddingData: WeddingData }) {
+  const { t } = useT();
   const events = (weddingData.events || []).filter((event) => event.visible !== false);
 
   if (events.length === 0) return null;
@@ -23,13 +25,13 @@ export default function EventsSection({ weddingData }: { weddingData: WeddingDat
       <Blob color="var(--color-sage)" className="w-[26rem] h-[26rem] bottom-10 -left-24 opacity-40 floaty" style={{ animationDelay: '3s' }} />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6">
-        <SectionHeading eyebrow="THE CELEBRATIONS" title="Event Schedule" />
+        <SectionHeading eyebrow={t("events.eyebrow")} title={t("events.title")} />
 
         {/* Events list */}
         <div className="space-y-10">
           {events.map((event, index) => (
             <Reveal key={event.id} delay={index * 0.08}>
-              <EventCard event={event} isMain={event.id === 'shaadi'} pastel={pastels[index % pastels.length]} />
+              <EventCard event={event} isMain={event.id === 'shaadi'} pastel={pastels[index % pastels.length]} getDirections={t("get.directions")} />
             </Reveal>
           ))}
         </div>
@@ -38,7 +40,7 @@ export default function EventsSection({ weddingData }: { weddingData: WeddingDat
   );
 }
 
-function EventCard({ event, isMain, pastel }: { event: EventData; isMain: boolean; pastel: string }) {
+function EventCard({ event, isMain, pastel, getDirections }: { event: EventData; isMain: boolean; pastel: string; getDirections: string }) {
   return (
     <div
       className={`card-royal overflow-hidden p-6 md:p-10 relative ${
@@ -113,7 +115,7 @@ function EventCard({ event, isMain, pastel }: { event: EventData; isMain: boolea
                 className="btn-outline-royal flex items-center gap-3 py-3 px-6 text-sm"
               >
                 <ExternalLink size={16} />
-                Get Directions
+                {getDirections}
               </motion.a>
             </div>
           </div>

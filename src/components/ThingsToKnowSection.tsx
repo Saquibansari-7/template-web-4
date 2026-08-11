@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { CloudSun, Shirt, Hotel, Phone, Car, Gift } from 'lucide-react';
 import { InfoItem } from '../App';
 import { Reveal, SectionHeading, Blob, WavyDivider } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 const icons = [<CloudSun />, <Shirt />, <Hotel />, <Phone />, <Car />, <Gift />];
 const iconByName: Record<string, ReactNode> = {
@@ -27,13 +28,14 @@ interface ThingsToKnowSectionProps {
 }
 
 export default function ThingsToKnowSection({ thingsToKnow }: ThingsToKnowSectionProps) {
+  const { t } = useT();
   return (
     <section id="info" className="relative py-32 bg-[var(--color-cream)] overflow-hidden">
       <Blob color="var(--color-sky)" className="w-[30rem] h-[30rem] -top-16 -left-24 opacity-40 floaty" />
       <Blob color="var(--color-blush)" className="w-[28rem] h-[28rem] bottom-16 -right-24 opacity-40 floaty" style={{ animationDelay: '2.5s' }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <SectionHeading eyebrow="GUEST INFORMATION" title="Helpful Details" />
+        <SectionHeading eyebrow={t("info.eyebrow")} title={t("info.title")} />
 
         {/* Info Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

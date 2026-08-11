@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useT } from '../context/LanguageContext';
 
 const PLAY_EVENT = 'curtain:play-music';
 
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
+  const { t } = useT();
 
   if (window.location.pathname === '/admin') return null;
 
@@ -36,7 +38,7 @@ export default function MusicPlayer() {
         type="button"
         className={`music-disk ${playing ? 'playing' : ''}`}
         onClick={toggle}
-        aria-label={playing ? 'Pause music' : 'Play music'}
+        aria-label={playing ? `${t("music")} - pause` : `${t("music")} - play`}
       >
         <span className="music-disk-label" />
         <span className="music-disk-icon">{playing ? '❚❚' : '▶'}</span>

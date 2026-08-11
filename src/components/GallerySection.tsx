@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
 import { SectionHeading, Blob } from './Decor';
 import { GalleryImage } from '../App';
+import { useT } from '../context/LanguageContext';
 
 export default function GallerySection({ gallery }: { gallery: GalleryImage[] }) {
+  const { t } = useT();
   const photos = gallery && gallery.length ? gallery : [];
   const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
 
@@ -13,7 +15,7 @@ export default function GallerySection({ gallery }: { gallery: GalleryImage[] })
       <Blob color="var(--color-peach)" className="w-[34rem] h-[34rem] top-10 left-1/2 -translate-x-1/2 opacity-40 floaty" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <SectionHeading eyebrow="A STORY IN PICTURES" title="Captured Moments" />
+        <SectionHeading eyebrow={t("gallery.eyebrow")} title={t("gallery.title")} />
 
         {/* Photo Grid */}
         {photos.length > 0 ? (
@@ -44,7 +46,7 @@ export default function GallerySection({ gallery }: { gallery: GalleryImage[] })
             ))}
           </div>
         ) : (
-          <p className="text-center text-[var(--color-ink)]/40 font-serif italic text-lg">No photos added yet.</p>
+          <p className="text-center text-[var(--color-ink)]/40 font-serif italic text-lg">{t("gallery.empty")}</p>
         )}
 
         {/* Instagram Link */}
@@ -63,7 +65,7 @@ export default function GallerySection({ gallery }: { gallery: GalleryImage[] })
             <div className="w-16 h-16 rounded-full border-2 border-[var(--color-royal-gold)] flex items-center justify-center text-[var(--color-royal-red)] transition-all duration-300 group-hover:bg-[var(--color-royal-red)] group-hover:text-white group-hover:border-[var(--color-royal-red)] group-hover:rotate-12">
               <Instagram className="w-6 h-6" />
             </div>
-            <span className="font-sans text-sm tracking-[0.4em] text-[var(--color-ink)] uppercase font-bold group-hover:text-[var(--color-royal-red)] transition-colors">#Tag us on instagram</span>
+            <span className="font-sans text-sm tracking-[0.4em] text-[var(--color-ink)] uppercase font-bold group-hover:text-[var(--color-royal-red)] transition-colors">{t("tag.instagram")}</span>
           </a>
         </motion.div>
       </div>

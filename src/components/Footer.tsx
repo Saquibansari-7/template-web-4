@@ -1,7 +1,9 @@
 import { Instagram } from 'lucide-react';
 import { Reveal, WavyDivider } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 export default function Footer({ footerDate, footerMessage, groomName, brideName }: { footerDate: string; footerMessage: string; groomName: string; brideName: string; }) {
+  const { t } = useT();
   return (
     <footer className="relative py-24 bg-[var(--color-cream)] border-t border-[var(--color-royal-gold)]/10 overflow-hidden">
       {/* Background Filigree */}
@@ -45,9 +47,9 @@ export default function Footer({ footerDate, footerMessage, groomName, brideName
           <p className="text-[var(--color-ink)]/60 font-serif italic text-lg leading-relaxed max-w-lg mx-auto mb-10">
             {footerMessage || "\"Two souls with but a single thought, two hearts that beat as one.\""}
             <br />
-            <span className="not-italic text-sm uppercase tracking-widest mt-4 block text-[var(--color-ink)]/40 font-sans">
-              We await your presence
-            </span>
+              <span className="not-italic text-sm uppercase tracking-widest mt-4 block text-[var(--color-ink)]/40 font-sans">
+                {t("we.await")}
+              </span>
           </p>
         </Reveal>
 

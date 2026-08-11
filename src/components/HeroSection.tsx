@@ -4,9 +4,11 @@ import { ChevronDown, X } from 'lucide-react';
 import { WeddingData } from '../App';
 import royalEmblem from '../assets/royal-emblem.png';
 import { Blob } from './Decor';
+import { useT } from '../context/LanguageContext';
 
 export default function HeroSection({ weddingData }: { weddingData: WeddingData }) {
   const [showInvitation, setShowInvitation] = useState(false);
+  const { t } = useT();
 
   // Format date for display
   const dateObj = new Date(weddingData.weddingDate);
@@ -79,10 +81,8 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
           transition={{ delay: 0.4 }}
           className="text-[var(--color-royal-gold)] tracking-[0.5em] text-xs md:text-sm mb-8 font-sans font-semibold"
         >
-          THE ROYAL UNION OF
+          {t("royal.union")}
         </motion.p>
-
-        {/* Couple Names */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -121,7 +121,7 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
           transition={{ delay: 1.4 }}
         >
           <p className="text-[var(--color-ink)] font-serif text-xl md:text-2xl italic mb-4">
-            Save the Date
+            {t("save.the.date")}
           </p>
           <p className="text-[var(--color-royal-red)] font-serif text-2xl md:text-3xl tracking-widest font-semibold">
             {formattedDate}
@@ -135,8 +135,8 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
           transition={{ delay: 1.8, type: 'spring', stiffness: 120, damping: 10 }}
           className="mt-12"
         >
-          <button onClick={() => setShowInvitation(true)} className="btn-royal">
-            View Invitation
+           <button onClick={() => setShowInvitation(true)} className="btn-royal">
+            {t("view.invitation")}
           </button>
         </motion.div>
       </div>
@@ -181,8 +181,8 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-serif text-gray-400 mb-2">No Invitation Image</h3>
-                    <p className="text-gray-500">Please upload an invitation image in the admin panel.</p>
+                  <h3 className="text-xl font-serif text-gray-400 mb-2">{t("no.invitation")}</h3>
+                  <p className="text-gray-500">{t("no.invitation.hint")}</p>
                   </div>
                 )}
               </div>
