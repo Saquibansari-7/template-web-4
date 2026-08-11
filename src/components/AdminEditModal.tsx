@@ -217,7 +217,7 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, saving 
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-royal-gold)]/20 flex flex-col h-[90vh]"
+          className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-royal-gold)]/20 flex flex-col h-[90vh] max-h-[90vh]"
         >
           {/* Header */}
           <div className="bg-[var(--color-royal-red)] p-6 flex items-center justify-between flex-shrink-0">
@@ -234,40 +234,40 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, saving 
           <div className="flex border-b border-[var(--color-surface-low)] bg-gray-50 flex-shrink-0">
             <button
               onClick={() => setActiveTab('general')}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'general' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 sm:py-4 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'general' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
                 }`}
             >
               <Info className="w-4 h-4" />
-              General Info
+              <span className="hidden sm:inline">General Info</span>
             </button>
             <button
               onClick={() => setActiveTab('events')}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'events' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 sm:py-4 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'events' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
                 }`}
             >
               <Calendar className="w-4 h-4" />
-              Event Schedule
+              <span className="hidden sm:inline">Event Schedule</span>
             </button>
             <button
               onClick={() => setActiveTab('gallery')}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'gallery' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 sm:py-4 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'gallery' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
                 }`}
             >
               <Images className="w-4 h-4" />
-              Gallery
+              <span className="hidden sm:inline">Gallery</span>
             </button>
             <button
               onClick={() => setActiveTab('info')}
-              className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'info' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
+              className={`flex-1 py-3 sm:py-4 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold tracking-wider uppercase transition-all ${activeTab === 'info' ? 'text-[var(--color-royal-red)] bg-white border-b-2 border-[var(--color-royal-red)]' : 'text-gray-400 hover:text-gray-600'
                 }`}
             >
               <Info className="w-4 h-4" />
-              Guest Info
+              <span className="hidden sm:inline">Guest Info</span>
             </button>
           </div>
 
           {/* Form Content */}
-          <div className="flex-grow overflow-y-auto p-8 custom-scrollbar">
+          <div className="flex-grow overflow-y-auto p-4 sm:p-8 custom-scrollbar">
             <form onSubmit={handleSubmit} className="space-y-8">
               {activeTab === 'general' ? (
                 <div className="space-y-8">

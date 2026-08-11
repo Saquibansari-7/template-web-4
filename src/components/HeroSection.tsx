@@ -141,14 +141,6 @@ export default function HeroSection({ weddingData }: { weddingData: WeddingData 
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
-        animate={{ y: [0, 12, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <ChevronDown className="text-[var(--color-royal-red)] w-8 h-8 opacity-60" />
-      </motion.div>
 
       {/* Invitation Modal */}
       <AnimatePresence>
