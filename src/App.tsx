@@ -12,6 +12,7 @@ import CurtainIntro from './components/CurtainIntro';
 import MusicPlayer from './components/MusicPlayer';
 import LanguageToggle from './components/LanguageToggle';
 import { WebsiteProvider, useWebsiteContext, DEFAULT_WEDDING_DATA } from './context/WebsiteContext';
+import { DEFAULT_SITE_ID } from './lib/supabase';
 import { LanguageProvider } from './context/LanguageContext';
 import type { WeddingData, EventData, InfoItem, GalleryImage } from './context/WebsiteContext';
 
@@ -19,7 +20,7 @@ export type { WeddingData, EventData, InfoItem, GalleryImage };
 export { DEFAULT_WEDDING_DATA };
 
 function SiteApp() {
-  const { weddingData, updateWeddingData, saveWeddingData, resetWeddingData } = useWebsiteContext();
+  const { weddingData, updateWeddingData, saveWeddingData, resetWeddingData, site } = useWebsiteContext();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(() => window.location.pathname === '/admin');
@@ -128,6 +129,7 @@ function SiteApp() {
           saving={saving}
           saveError={saveError}
           saveSuccess={saveSuccess}
+          siteId={site?.id || DEFAULT_SITE_ID}
         />
       )}
     </div>

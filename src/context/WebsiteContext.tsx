@@ -1,6 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { loadContent } from "../services/loadContent";
-import { saveContent } from "../services/saveContent";
+import { loadContent, loadContentByCustomer } from "../services/loadContent";
+import { saveContent, saveContentToSite } from "../services/saveContent";
+import type { SiteRow } from "../lib/siteResolver";
 import { DEFAULT_SITE_ID } from "../lib/supabase";
 
 export interface EventData {
@@ -169,6 +171,7 @@ export interface WebsiteContextType {
   updateWeddingData: (data: WeddingData) => void;
   saveWeddingData: (data: WeddingData) => Promise<{ error?: unknown }>;
   resetWeddingData: () => void;
+  site?: SiteRow | null;
 }
 
 export const WebsiteContext = createContext<WebsiteContextType | undefined>(undefined);
@@ -181,34 +184,67 @@ interface WebsiteProviderProps {
 export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteProviderProps) {
   const [weddingData, setWeddingData] = useState<WeddingData>(DEFAULT_WEDDING_DATA);
   const [loading, setLoading] = useState(true);
+  const [site, setSite] = useState<SiteRow | null>(null);
 
-  useEffect(() => {
-    let active = true;
-    loadContent(siteId)
-      .then((data) => {
-        if (!active) return;
-        if (data) {
-          setWeddingData(mergeWithDefaults(data));
-        }
-      })
-      .catch(() => {
-        /* keep defaults */
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [siteId]);
-
-  const mergeWithDefaults = (data: WeddingData): WeddingData => ({
+  const mergeWithDefaults = useCallback((data: WeddingData): WeddingData => ({
     ...DEFAULT_WEDDING_DATA,
     ...data,
     events: data.events && data.events.length ? data.events : DEFAULT_WEDDING_DATA.events,
     gallery: data.gallery && data.gallery.length ? data.gallery : DEFAULT_WEDDING_DATA.gallery,
     thingsToKnow: data.thingsToKnow && data.thingsToKnow.length ? data.thingsToKnow : DEFAULT_WEDDING_DATA.thingsToKnow,
-  });
+  }), []);
+
+  useEffect(() => {
+    let active = true;
+    
+    const params = new URLSearchParams(window.location.search);
+    const customer = params.get("customer");
+
+    const load = async () => {
+      try {
+        if (customer && customer.trim()) {
+          const result = await loadContentByCustomer(customer, DEFAULT_WEDDING_DATA);
+          if (!active) return;
+          if (result) {
+            setWeddingData(result.content);
+            setSite(result.site);
+          } else {
+            console.warn("[App] customer not found, using default site");
+            const data = await loadContent(siteId);
+            if (!active) return;
+            if (data) {
+              setWeddingData(mergeWithDefaults(data));
+            }
+          }
+        } else {
+          const data = await loadContent(siteId);
+          if (!active) return;
+          if (data) {
+            setWeddingData(mergeWithDefaults(data));
+          }
+        }
+      } catch (err) {
+        console.error("[App] load failed:", err);
+        try {
+          const data = await loadContent(siteId);
+          if (!active) return;
+          if (data) {
+            setWeddingData(mergeWithDefaults(data));
+          }
+        } catch (fallbackErr) {
+          console.error("[App] fallback load failed:", fallbackErr);
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, [siteId, mergeWithDefaults]);
 
   const updateWeddingData = useCallback((data: WeddingData) => {
     setWeddingData(data);
@@ -216,10 +252,18 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
 
   const saveWeddingData = useCallback(
     async (data: WeddingData) => {
-      const { error } = await saveContent(siteId, data);
-      return { error };
+      try {
+        if (site) {
+          const result = await saveContentToSite(site.id, data);
+          return { error: result.error };
+        }
+        const result = await saveContent(siteId, data);
+        return { error: result.error };
+      } catch (err) {
+        return { error: err };
+      }
     },
-    [siteId]
+    [siteId, site]
   );
 
   const resetWeddingData = useCallback(() => {
@@ -234,6 +278,7 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
         updateWeddingData,
         saveWeddingData,
         resetWeddingData,
+        site,
       }}
     >
       {children}

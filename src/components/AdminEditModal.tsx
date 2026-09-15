@@ -13,9 +13,10 @@ interface AdminEditModalProps {
   saving?: boolean;
   saveError?: string | null;
   saveSuccess?: boolean;
+  siteId?: string;
 }
 
-export default function AdminEditModal({ data, onClose, onSave, onReset, saving = false, saveError = null, saveSuccess = false }: AdminEditModalProps) {
+export default function AdminEditModal({ data, onClose, onSave, onReset, saving = false, saveError = null, saveSuccess = false, siteId = DEFAULT_SITE_ID }: AdminEditModalProps) {
   const [formData, setFormData] = useState<WeddingData>({
     ...data,
     events: data.events || [],
@@ -42,7 +43,7 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, saving 
   const resolveImageSrc = async (file: File): Promise<string> => {
     if (isSupabaseConfigured()) {
       try {
-        return await uploadImage(DEFAULT_SITE_ID, file);
+        return await uploadImage(siteId, file);
       } catch (err) {
         console.warn('Image upload failed, falling back to base64', err);
       }
