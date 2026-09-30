@@ -7,6 +7,7 @@ import CountdownSection from './components/CountdownSection';
 import RSVPSection from './components/RSVPSection';
 import Footer from './components/Footer';
 import AdminEditModal from './components/AdminEditModal';
+import NotFoundPage from './components/NotFoundPage';
 import { ScrollProgress, Petals } from './components/Decor';
 import CurtainIntro from './components/CurtainIntro';
 import MusicPlayer from './components/MusicPlayer';
@@ -20,7 +21,7 @@ export type { WeddingData, EventData, InfoItem, GalleryImage };
 export { DEFAULT_WEDDING_DATA };
 
 function SiteApp() {
-  const { weddingData, updateWeddingData, saveWeddingData, resetWeddingData, site } = useWebsiteContext();
+  const { weddingData, updateWeddingData, saveWeddingData, resetWeddingData, site, notFound } = useWebsiteContext();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(() => window.location.pathname === '/admin');
@@ -53,6 +54,10 @@ function SiteApp() {
       alert('Incorrect password');
     }
   };
+
+  if (notFound) {
+    return <NotFoundPage />;
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--color-cream)]">

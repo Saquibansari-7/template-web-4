@@ -172,6 +172,7 @@ export interface WebsiteContextType {
   saveWeddingData: (data: WeddingData) => Promise<{ error?: unknown }>;
   resetWeddingData: () => void;
   site?: SiteRow | null;
+  notFound?: boolean;
 }
 
 export const WebsiteContext = createContext<WebsiteContextType | undefined>(undefined);
@@ -185,6 +186,7 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
   const [weddingData, setWeddingData] = useState<WeddingData>(DEFAULT_WEDDING_DATA);
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState<SiteRow | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   const mergeWithDefaults = useCallback((data: WeddingData): WeddingData => ({
     ...DEFAULT_WEDDING_DATA,
@@ -208,15 +210,13 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
           if (result) {
             setWeddingData(result.content);
             setSite(result.site);
+            setNotFound(false);
           } else {
-            console.warn("[App] customer not found, using default site");
-            const data = await loadContent(siteId);
-            if (!active) return;
-            if (data) {
-              setWeddingData(mergeWithDefaults(data));
-            }
+            console.warn("[App] customer not found, showing 404");
+            setNotFound(true);
           }
         } else {
+          setNotFound(false);
           const data = await loadContent(siteId);
           if (!active) return;
           if (data) {
@@ -230,6 +230,7 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
           if (!active) return;
           if (data) {
             setWeddingData(mergeWithDefaults(data));
+            setNotFound(false);
           }
         } catch (fallbackErr) {
           console.error("[App] fallback load failed:", fallbackErr);
@@ -279,6 +280,7 @@ export function WebsiteProvider({ children, siteId = DEFAULT_SITE_ID }: WebsiteP
         saveWeddingData,
         resetWeddingData,
         site,
+        notFound,
       }}
     >
       {children}

@@ -5,41 +5,32 @@ export interface SiteRow {
   [key: string]: unknown;
 }
 
+const MAIN_APP_API = (import.meta.env.VITE_MAIN_APP_API_URL || "https://weddappvows.vercel.app").replace(/\/+$/, "");
+
 export async function resolveSite(
   customerSubdomain: string,
-  supabaseUrl: string,
-  supabaseKey: string,
 ): Promise<SiteRow | null> {
-  let subdomain = (customerSubdomain || "").trim().toLowerCase();
-  if (!subdomain) return null;
+  let customer = (customerSubdomain || "").trim().toLowerCase();
+  if (!customer) return null;
 
-  subdomain = subdomain.replace(/\/+$/, "");
+  customer = customer.replace(/\/+$/, "");
 
-  const url = supabaseUrl.trim();
-  const key = supabaseKey.trim();
-  if (!url || !key) return null;
-
-  const safe = subdomain.replace(/[^a-zA-Z0-9_-]/g, "");
-  if (safe !== subdomain) {
-    console.warn("[siteResolver] stripped invalid chars from subdomain:", subdomain, "→", safe);
-    subdomain = safe;
+  if (!/^[a-z0-9](?:[a-z0-9-]{0,58}[a-z0-9])?$/.test(customer)) {
+    console.warn("[siteResolver] invalid subdomain format:", customer);
+    return null;
   }
-  if (!subdomain) return null;
 
   try {
-    const res = await fetch(
-      `${url}/rest/v1/sites?subdomain=eq.${encodeURIComponent(subdomain)}&select=*&limit=1`,
-      { headers: { apikey: key, Authorization: `Bearer ${key}` } },
-    );
+    const res = await fetch(`${MAIN_APP_API}/api/site/lookup?customer=${encodeURIComponent(customer)}`);
 
     if (!res.ok) {
-      console.error("[siteResolver] HTTP", res.status, await res.text().catch(() => ""));
+      console.error("[siteResolver] HTTP", res.status);
       return null;
     }
 
-    const rows = (await res.json()) as SiteRow[];
-    console.log("[siteResolver] rows returned:", rows.length, "for", subdomain);
-    return rows[0] ?? null;
+    const site = (await res.json()) as SiteRow;
+    console.log("[siteResolver] site found:", site?.subdomain);
+    return site ?? null;
   } catch (err) {
     console.error("[siteResolver] fetch failed:", err);
     return null;

@@ -53,12 +53,8 @@ export function mergeDeep<T>(target: T, source: Record<string, unknown>): T {
 }
 
 export async function loadContentByCustomer(customer: string, defaults: WeddingData) {
-  const url = import.meta.env.VITE_PUBLIC_SUPABASE_URL?.trim();
-  const key = import.meta.env.VITE_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
-  if (!url || !key) return null;
-
   const { resolveSite } = await import("../lib/siteResolver");
-  const site = await resolveSite(customer, url, key);
+  const site = await resolveSite(customer);
   if (!site || !site.data) return null;
 
   const merged = mergeDeep(defaults, site.data as Record<string, unknown>);
