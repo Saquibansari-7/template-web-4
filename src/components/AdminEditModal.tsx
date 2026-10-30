@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Trash2, Calendar, Info, Upload, Image, Eye, EyeOff, Images, Loader2, CheckCircle } from 'lucide-react';
+import { X, Save, Trash2, Calendar, Info, Upload, Image, Eye, EyeOff, Images, Loader2, CheckCircle, Lock, Eye as EyeIcon } from 'lucide-react';
 import { WeddingData, EventData } from '../context/WebsiteContext';
 import { uploadImage } from '../services/uploadImage';
 import { isSupabaseConfigured, DEFAULT_SITE_ID } from '../lib/supabase';
@@ -10,13 +10,15 @@ interface AdminEditModalProps {
   onClose: () => void;
   onSave: (newData: WeddingData) => void;
   onReset: () => void;
+  onResetPassword?: () => void;
+  viewSiteHref?: string;
   saving?: boolean;
   saveError?: string | null;
   saveSuccess?: boolean;
   siteId?: string;
 }
 
-export default function AdminEditModal({ data, onClose, onSave, onReset, saving = false, saveError = null, saveSuccess = false, siteId = DEFAULT_SITE_ID }: AdminEditModalProps) {
+export default function AdminEditModal({ data, onClose, onSave, onReset, onResetPassword, viewSiteHref = '/', saving = false, saveError = null, saveSuccess = false, siteId = DEFAULT_SITE_ID }: AdminEditModalProps) {
   const [formData, setFormData] = useState<WeddingData>({
     ...data,
     events: data.events || [],
@@ -226,9 +228,22 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, saving 
               <h2 className="text-white font-serif text-2xl">Wedding Control Center</h2>
               <p className="text-white/60 text-xs uppercase tracking-widest mt-1">Admin Panel</p>
             </div>
-            <button onClick={onClose} className="text-white/80 hover:text-white transition-colors">
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-2">
+              {onResetPassword && (
+                <button
+                  type="button"
+                  onClick={onResetPassword}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/30 text-white/80 hover:bg-white/10 transition-all"
+                  title="Change admin password"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Change Password</span>
+                </button>
+              )}
+              <button onClick={onClose} className="text-white/80 hover:text-white transition-colors">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
 
           {/* Tabs */}
@@ -697,6 +712,15 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, saving 
               )}
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
+            <a
+              href={viewSiteHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-6 py-3 border-2 border-[var(--color-royal-gold)] text-[var(--color-royal-gold)] hover:bg-[var(--color-royal-gold)]/10 rounded-xl transition-all flex items-center justify-center gap-2 font-bold text-sm tracking-widest uppercase"
+            >
+              <EyeIcon className="w-5 h-5" />
+              View Site
+            </a>
             <button
               type="button"
               onClick={handleReset}

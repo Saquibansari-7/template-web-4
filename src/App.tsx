@@ -45,6 +45,10 @@ function SiteApp() {
     }
   };
 
+  const viewSiteHref = customer
+    ? `/?customer=${encodeURIComponent(customer)}`
+    : '/';
+
   if (notFound) {
     return <NotFoundPage />;
   }
@@ -57,6 +61,11 @@ function SiteApp() {
           onClose={() => {}}
           onSave={handleSaveAndPersist}
           onReset={resetWeddingData}
+          onResetPassword={() => {
+            localStorage.removeItem(`admin_pass_${customer || 'default'}`);
+            window.location.reload();
+          }}
+          viewSiteHref={viewSiteHref}
           saving={saving}
           saveError={saveError}
           saveSuccess={saveSuccess}
