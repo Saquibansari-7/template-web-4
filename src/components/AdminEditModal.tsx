@@ -228,20 +228,20 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, onReset
               <h2 className="text-white font-serif text-2xl">Wedding Control Center</h2>
               <p className="text-white/60 text-xs uppercase tracking-widest mt-1">Admin Panel</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {onResetPassword && (
                 <button
                   type="button"
                   onClick={onResetPassword}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/30 text-white/80 hover:bg-white/10 transition-all"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border border-white/30 text-white/80 hover:bg-white/10 transition-all"
                   title="Change admin password"
                 >
                   <Lock className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Change Password</span>
+                  <span>Change pass</span>
                 </button>
               )}
-              <button onClick={onClose} className="text-white/80 hover:text-white transition-colors">
-                <X className="w-6 h-6" />
+              <button onClick={onClose} className="text-white/80 hover:text-white transition-colors p-1">
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -690,12 +690,12 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, onReset
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 bg-white border-t border-[var(--color-surface-low)] flex flex-col sm:flex-row items-center gap-4 flex-shrink-0">
+          <div className="p-4 bg-white border-t border-[var(--color-surface-low)] flex flex-col gap-2 flex-shrink-0">
             {saveError && (
-              <p className="w-full text-center text-sm text-red-500">{saveError}</p>
+              <p className="text-center text-sm text-red-500">{saveError}</p>
             )}
             {saveSuccess && !saveError && (
-              <p className="w-full text-center text-sm text-green-600 flex items-center justify-center gap-2">
+              <p className="text-center text-sm text-green-600 flex items-center justify-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 Saved successfully.
               </p>
@@ -703,32 +703,34 @@ export default function AdminEditModal({ data, onClose, onSave, onReset, onReset
             <button
               onClick={handleSubmit}
               disabled={saving}
-              className="w-full sm:flex-1 btn-royal py-3 flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full btn-royal py-2.5 flex items-center justify-center gap-2 disabled:opacity-60 text-sm"
             >
               {saving ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
               )}
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
-            <a
-              href={viewSiteHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3 border-2 border-[var(--color-royal-gold)] text-[var(--color-royal-gold)] hover:bg-[var(--color-royal-gold)]/10 rounded-xl transition-all flex items-center justify-center gap-2 font-bold text-sm tracking-widest uppercase"
-            >
-              <EyeIcon className="w-5 h-5" />
-              View Site
-            </a>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="w-full sm:w-auto px-6 py-3 border-2 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-500 rounded-xl transition-all flex items-center justify-center gap-2 font-bold text-sm tracking-widest uppercase"
-            >
-              <Trash2 className="w-5 h-5" />
-              Reset All
-            </button>
+            <div className="flex gap-2">
+              <a
+                href={viewSiteHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-3 py-2 border-2 border-[var(--color-royal-gold)] text-[var(--color-royal-gold)] hover:bg-[var(--color-royal-gold)]/10 rounded-xl transition-all flex items-center justify-center gap-1.5 font-bold text-xs tracking-widest uppercase"
+              >
+                <EyeIcon className="w-4 h-4" />
+                View Site
+              </a>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex-1 px-3 py-2 border-2 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-500 rounded-xl transition-all flex items-center justify-center gap-1.5 font-bold text-xs tracking-widest uppercase"
+              >
+                <Trash2 className="w-4 h-4" />
+                Reset All
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>
